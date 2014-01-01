@@ -2,3 +2,4 @@
 .gitignore
 main/
 	old_css.css
+	*.swp
