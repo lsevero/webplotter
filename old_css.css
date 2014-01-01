@@ -1,0 +1,54 @@
+
+    @import url(http://fonts.googleapis.com/css?family=Alegreya+Sans+SC);
+    body{
+	overflow: hidden;
+	background:"#fff";
+    }
+    h1{
+    top:1%;
+    }
+    h3{
+    top:5%;
+    }
+    button, select{
+    top:10%;
+    text-align:center;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    font-family: 'Alegreya Sans SC', sans-serif;
+    }
+
+    #editor { 
+	margin: 0;
+	position: absolute;
+	width:50%;
+	float:left;
+	/*top: 15%;
+	bottom: 5%;
+	left: 0;
+	right: 50%;*/
+    }
+    #container { 
+	position: absolute;
+	top: 15%;
+	/*bottom:5%;*/
+	left:50%;
+	right:0;
+	width : 30em;
+	height: 384px;
+	margin:0;
+    }
+    footer{
+    position:absolute;
+    bottom:2%;
+    }
+.txt {position: absolute;
+       text-align:center;
+       margin-left: auto;
+       margin-right: auto;
+       left: 0;
+       right: 0;
+       font-family: 'Alegreya Sans SC', sans-serif;
+       }

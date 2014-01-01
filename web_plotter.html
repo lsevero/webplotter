@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <link rel="stylesheet" href="simplegrid.css" type="text/css" media="screen" charset="utf-8">
+  <title>Web Plotter</title>
+  <style type="text/css" media="screen">
+    @import url(http://fonts.googleapis.com/css?family=Alegreya+Sans+SC);
+	h1,h3,button,select,footer{
+	text-align:center;
+	font-family: 'Alegreya Sans SC', sans-serif;
+	}
+	#editor{
+	position:relative;
+	height:50em;
+	width:45em;
+	}
+	#container{
+	margin-top:10%;
+	position:relative;
+	height:25em;
+	width:35em;
+	}
+  </style>
+</head>
+<body>
+<a href="https://github.com/lvspais/dnlcaos"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_darkblue_121621.png" alt="Fork me on GitHub"></a>
+<h1 class="txt" id="heading1">Web plotter</h1>
+<h3  class="txt" id="heading3">Um simples plotador de gráficos com acesso ao código fonte<br>
+Feito com Ace, Flotr2, Coffeescript e boas intenções
+</h3>
+<div class="grid">
+	<div class="col-1-3">
+		<button name="botao" onclick="grafico();">Gera gráfico</button>
+	</div>
+	<div class="col-1-3">
+		<button name="download" onclick="graph.download.saveImage('jpeg');">Download imagem</button>
+	</div>
+	<div class="col-1-3">
+		<select name="list" id="menu" onchange="window.selecionado()">
+			<option value="op1">Cobweb</option>
+			<option value="op2">Javascript animation</option>
+			<option value="op3">Simple plot</option>
+			<option value="op4">Click example</option>
+		</select><br>
+	</div>
+</div>
+<div class="grid">
+	<div class="col-1-2">
+		<pre id="editor">
+#do not remove this line
+container = document.getElementById('container')#the div container holds the graphic
+#to plot use the function like this
+##Flotr.draw(container, data, options)
+#data is a array of coordinates in the form [[x0,y0],[x1,y1],[x2,y2],...], or the array of JSON's like this example
+#see Flotr2 doc's for more information
+#http://humblesoftware.com/flotr2/documentation
+#visit http://coffeescript.org/ for the coffeescript syntax
+################################################################################
+# COBWEB PLOT EXAMPLE
+################################################################################
+mapa= (a,x) ->
+   a*x*(1-x)
+cobweb=()->
+   it=100
+   abcissa=(i/100 for i in [0...100])
+   a=4
+   x0=0.12345
+   bissetriz=[[0,0],[1,1]]
+   parabola=[]
+   cob=[]
+   for i in abcissa
+      do (i) ->
+         parabola.push([i,mapa(a,i)])#append the pair of coordinates in the array
+   x=x0
+   cob.push([x0,0])
+   for i in [0...it]
+      do (i) ->
+         cob.push([x,mapa(a,x)])
+         x=mapa(a,x)
+         cob.push([x,x])
+   data=[{data:bissetriz},{data:parabola},{data:cob},{data:[[x0,0]],label:'x0',points:{show:true}}]
+   #to show the text in the plot when you download the image, use the "HtmlText:false" option
+   graph = Flotr.draw(container, data, {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false,title:'Cobweb Plot'})
+#if you define a function to draw the graphic, don't forget to call it
+cobweb()
+		</pre>
+	</div>
+	<div class="col-1-2">
+		<div id="container"></div>
+	</div>
+</div><br>
+<footer class="txt" >Criado por Lucas Severo</footer>
+<script src="src-min-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+<script src="coffee-script.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="flotr2.min.js"></script>
+<script type="text/javascript" charset="utf-8">
+	var editor = ace.edit("editor");
+	editor.setTheme("ace/theme/chaos");
+	editor.getSession().setMode("ace/mode/coffee");
+	var graph = Flotr.draw(container, [[0,0]], {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false});
+</script>
+
+<script type="text/coffeescript" charset="utf-8">
+window.codeJSAnimacao="""`
+//JS code works too, just surround your code with backticks
+//taken from the Flotr2 website
+(function () {
+
+var
+  container = document.getElementById('container'),
+    start = (new Date).getTime(),
+      data, graph, offset, i;
+
+      // Draw a sine curve at time t
+      function animate (t) {
+
+data = [];
+  offset = 2 * Math.PI * (t - start) / 10000;
+
+    // Sample the sine function
+      for (i = 0; i < 4 * Math.PI; i += 0.2) {
+  data.push([i, Math.sin(i - offset)]);
+    }
+
+      // Draw Graph
+graph = Flotr.draw(container, [ data ], {
+    yaxis : {
+  max : 2,
+min : -2
+    },
+HtmlText:false
+  });
+
+    // Animate
+      setTimeout(function () {
+  animate((new Date).getTime());
+    }, 50);
+    }
+
+    animate(start);
+  })();`"""
+window.codeSimplePlot="""
+container = document.getElementById('container')#the div container holds the graphic
+#coffeescript suports list comprehension
+simple_plot= ->
+    arr1=[]
+    arr1.push([x,Math.sqrt(x)]) for x in [0...10]
+    arr2=[]
+    arr2.push([x,Math.pow(x,2)]) for x in [0...10]
+    arr3=[]
+    arr3.push([x,x]) for x in [0...10]
+    graph=Flotr.draw(container, [arr1, arr2, arr3],{yaxis:{max:50,min:0},xaxis:{max:9,min:0},HtmlText:false,title:"simple plot"})
+simple_plot()"""
+window.codeCobweb="""
+#do not remove this line
+container = document.getElementById('container')#the div container holds the graphic
+#to plot use the function like this
+##Flotr.draw(container, data, options)
+#data is a array of coordinates in the form [[x0,y0],[x1,y1],[x2,y2],...], or the array of JSON's like this example
+#see Flotr2 doc's for more information
+#http://humblesoftware.com/flotr2/documentation
+#visit http://coffeescript.org/ for the coffeescript syntax
+################################################################################
+# COBWEB PLOT EXAMPLE
+################################################################################
+mapa= (a,x) ->
+   a*x*(1-x)
+cobweb=()->
+   it=100
+   abcissa=(i/100 for i in [0...100])
+   a=4
+   x0=0.12345
+   bissetriz=[[0,0],[1,1]]
+   parabola=[]
+   cob=[]
+   for i in abcissa
+      do (i) ->
+         parabola.push([i,mapa(a,i)])#append the pair of coordinates in the array
+   x=x0
+   cob.push([x0,0])
+   for i in [0...it]
+      do (i) ->
+         cob.push([x,mapa(a,x)])
+         x=mapa(a,x)
+         cob.push([x,x])
+   data=[{data:bissetriz},{data:parabola},{data:cob},{data:[[x0,0]],label:'x0',points:{show:true}}]
+   #to show the text in the plot when you download the image, use the "HtmlText:false" option
+   graph = Flotr.draw(container, data, {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false,title:'Cobweb Plot'})
+#if you define a function to draw the graphic, don't forget to call it
+cobweb()
+"""
+window.codeClick="""
+`//another Javascript example
+//it was taken from the Flotr2 website, could easily rewritten in coffeescript
+(function click_example(container) {
+
+    var
+  d1 = [
+  [0, 0]
+    ],
+      // Point at origin
+      options, graph;
+
+  options = {
+  xaxis: {
+      min: 0,
+    max: 15
+  },
+  yaxis: {
+      min: 0,
+    max: 15
+  },
+  lines: {
+      show: true
+      },
+      points: {
+    show: true
+  },
+  mouse: {
+      track: true
+      },
+       title: 'Click Example',
+       HtmlText: false
+  };
+
+    graph = Flotr.draw(container, [d1], options);
+
+  // Add a point to the series and redraw the graph
+    Flotr.EventAdapter.observe(container, 'flotr:click', function(position) {
+
+      // Add a point to the series at the location of the click
+      d1.push([position.x, position.y]);
+
+      // Sort the series.
+      d1 = d1.sort(function(a, b) {
+    return a[0] - b[0];
+  });
+
+  // Redraw the graph, with the new series.
+  graph = Flotr.draw(container, [d1], options);
+    });
+    })(document.getElementById("container"));`
+"""
+window.selecionado= ->
+	graph = Flotr.draw(container, [[0,0]], {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false})
+	opt=document.getElementById("menu")
+	if opt.value is "op1" then editor.setValue(window.codeCobweb)
+	else if opt.value is "op2" then editor.setValue(window.codeJSAnimacao)
+	else if opt.value is "op3" then editor.setValue(window.codeSimplePlot)
+	else if opt.value is "op4" then editor.setValue(window.codeClick)
+
+window.grafico= ->
+	code=editor.getValue()
+	CoffeeScript.run(code)
+</script>
+
+</body>
+</html>
