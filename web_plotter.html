@@ -107,16 +107,13 @@ cobweb()
 <script type="text/coffeescript" charset="utf-8">
 window.codeJSAnimacao="""`
 //JS code works too, just surround your code with backticks
-//taken from the Flotr2 website
-//This code creates the animation recursively in an infinite loop,
-//so if you want to plot something else you will have to refresh the browser
 (function () {
 
 var
   container = document.getElementById('container'),
     start = (new Date).getTime(),
       data, graph, offset, i;
-
+var cont=0;
       // Draw a sine curve at time t
       function animate (t) {
 
@@ -136,10 +133,14 @@ min : -2
     },
 HtmlText:false
   });
+//stops after 200 frames
+if(cont>=200){
+Flotr.draw(container, [[0,0],[0,0]], {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false});
+return 0;}
 
     // Animate
       setTimeout(function () {
-  animate((new Date).getTime());
+  animate((new Date).getTime());cont++;
     }, 50);
     }
 
@@ -247,13 +248,14 @@ window.codeClick="""
     });
     })(document.getElementById("container"));`
 """
-codeBifurcacao="""
+window.codeBifurcacao="""
+#this plot only show points
 mapa= (a,x) ->
 	a*x*(1-x)
 
 bifurcacao= () ->
 	it=100
-	amin=0
+	amin=1
 	amax=4
 	x0=0.12345
 	A=(((amax-amin)*(i/100))+amin for i in [0..100])
@@ -273,12 +275,19 @@ bifurcacao= () ->
 bifurcacao()
 """
 
-codeCobwebanim="""
+window.codeCobwebanim="""
+#Like the other animation, it can become buggy
+#if you plot something without after refresh the browser.
+
 container = document.getElementById('container')
-running=false
+##############
+#associate with window object to make global variables
+###############
 a=0
 amax=4
 apasso=0.05
+tempo=50
+
 mapa= (a,x) ->
 	a*x*(1-x)
 
@@ -307,15 +316,15 @@ cobweb=(a)->
 
 animate = () ->
 	cobweb(a)
-	set_default() if a >= amax
+	if a >= amax
+		set_default()
+		`return 0`
 	a+=apasso
 	setTimeout( ->
-		animate() if running is true
-	,parseInt document.getElementById("tempo").value)
-	#as=(0.05*i/4 for i in [0..200])
-	#for a in as
-		#do (a) ->
-			#setTimeout(cobweb(a),100)
+		animate()
+	,tempo)
+
+animate()
 """
 
 window.selecionado= ->
