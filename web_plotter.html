@@ -43,6 +43,8 @@ Feito com Ace, Flotr2, Coffeescript e boas intenções
 			<option value="op2">Javascript animation</option>
 			<option value="op3">Simple plot</option>
 			<option value="op4">Click example</option>
+			<option value="op5">Bifurcation Diagram</option>
+			<option value="op6">Cobweb Animated</option>
 		</select><br>
 	</div>
 </div>
@@ -106,6 +108,8 @@ cobweb()
 window.codeJSAnimacao="""`
 //JS code works too, just surround your code with backticks
 //taken from the Flotr2 website
+//This code creates the animation recursively in an infinite loop,
+//so if you want to plot something else you will have to refresh the browser
 (function () {
 
 var
@@ -243,6 +247,77 @@ window.codeClick="""
     });
     })(document.getElementById("container"));`
 """
+codeBifurcacao="""
+mapa= (a,x) ->
+	a*x*(1-x)
+
+bifurcacao= () ->
+	it=100
+	amin=0
+	amax=4
+	x0=0.12345
+	A=(((amax-amin)*(i/100))+amin for i in [0..100])
+	pontos=[]
+	data=[{data:pontos,label:"a",points:{show:true}}]
+	x=x0
+	for a in A
+		do (a) ->
+			for i in [0...it]
+				do (i) ->
+					x=mapa(a,x)
+			for j in [0...it]
+				do (j) ->
+					x=mapa(a,x)
+					pontos.push([a,x])
+	graph = Flotr.draw(container, data, {yaxis:{max:1,min:0},xaxis:{max:amax,min:amin}})#,xaxis:{min:0,max:1}})
+bifurcacao()
+"""
+
+codeCobwebanim="""
+container = document.getElementById('container')
+running=false
+a=0
+amax=4
+apasso=0.05
+mapa= (a,x) ->
+	a*x*(1-x)
+
+set_default=()->
+	Flotr.draw(container, [[0,0],[0,0]], {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false})#,xaxis:{min:0,max:1}})
+
+cobweb=(a)->
+	it=100
+	abcissa=(i/100 for i in [0...100])
+	x0=0.12345
+	bissetriz=[[0,0],[1,1]]
+	parabola=[]
+	cob=[]
+	for i in abcissa
+		do (i) ->
+			parabola.push([i,mapa(a,i)])
+	x=x0
+	cob.push([x0,0])
+	for i in [0...it]
+		do (i) ->
+			cob.push([x,mapa(a,x)])
+			x=mapa(a,x)
+			cob.push([x,x])
+	data=[{data:bissetriz},{data:parabola},{data:cob},{data:[[x0,0]],label:'x0',points:{show:true}}]
+	graph = Flotr.draw(container, data, {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false})#,xaxis:{min:0,max:1}})
+
+animate = () ->
+	cobweb(a)
+	set_default() if a >= amax
+	a+=apasso
+	setTimeout( ->
+		animate() if running is true
+	,parseInt document.getElementById("tempo").value)
+	#as=(0.05*i/4 for i in [0..200])
+	#for a in as
+		#do (a) ->
+			#setTimeout(cobweb(a),100)
+"""
+
 window.selecionado= ->
 	graph = Flotr.draw(container, [[0,0]], {yaxis:{max:1,min:0},xaxis:{max:1,min:0},legend:{position:'se'},HtmlText: false})
 	opt=document.getElementById("menu")
@@ -250,6 +325,8 @@ window.selecionado= ->
 	else if opt.value is "op2" then editor.setValue(window.codeJSAnimacao)
 	else if opt.value is "op3" then editor.setValue(window.codeSimplePlot)
 	else if opt.value is "op4" then editor.setValue(window.codeClick)
+	else if opt.value is "op5" then editor.setValue(window.codeBifurcacao)
+	else if opt.value is "op6" then editor.setValue(window.codeCobwebanim)
 
 window.grafico= ->
 	code=editor.getValue()
