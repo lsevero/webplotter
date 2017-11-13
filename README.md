@@ -6,4 +6,4 @@ Instead of just write the mathematical function like "x^2 + 1" that you would ty
 The plots are made in client side,and can be written in Coffeescript or Javascript, your choice.
 It can handle animations too. I also added a button to let you save the graphic as a image.
 
-Go to http://lvspais.herokuapp.com/web_plotter.html to see it running.
+Go to http://lvspais.herokuapp.com/dnlcaos/web_plotter.html to see it running.
